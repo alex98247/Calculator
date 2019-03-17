@@ -1,0 +1,12 @@
+c:\users\alex\source\repos\Calculator\Calculator\bin\Debug\Calculator.exe.config
+c:\users\alex\source\repos\Calculator\Calculator\bin\Debug\Calculator.exe
+c:\users\alex\source\repos\Calculator\Calculator\bin\Debug\Calculator.pdb
+c:\users\alex\source\repos\Calculator\Calculator\bin\Debug\NCalc.dll
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.csprojAssemblyReference.cache
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.Form1.resources
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.Properties.Resources.resources
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.csproj.GenerateResource.cache
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.csproj.CoreCompileInputs.cache
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.csproj.CopyComplete
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.exe
+c:\users\alex\source\repos\Calculator\Calculator\obj\Debug\Calculator.pdb
