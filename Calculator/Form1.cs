@@ -1,13 +1,9 @@
 ﻿using NCalc;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using static System.String;
 
 namespace Calculator
 {
@@ -36,7 +32,7 @@ namespace Calculator
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             base.Capture = false;
-            Message m = Message.Create(base.Handle, 0xa1, new IntPtr(2), IntPtr.Zero);
+            var m = Message.Create(base.Handle, 0xa1, new IntPtr(2), IntPtr.Zero);
             this.WndProc(ref m);
         }
 
@@ -66,36 +62,91 @@ namespace Calculator
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text != "")
+            if (textBox1.Text == "") return;
+            var regex = new Regex(@"\d*", RegexOptions.IgnoreCase);
+            var matches = regex.Matches(textBox1.Text);
+            var delta = 0;
+            foreach (Match element in matches)
             {
-                var val = (double)new Expression(textBox1.Text).Evaluate();
-                textBox1.Text = Math.Round(val, 5).ToString();
+                if (element.Length != 0)
+                {
+                    var decInt = ToDec(element.Value, 6).ToString();
+                    textBox1.Text = textBox1.Text.Remove(element.Index - delta, element.Length)
+                        .Insert(element.Index - delta, decInt);
+                    delta += element.Length - decInt.Length;
+                }
             }
+
+
+            var val = Convert.ToDouble(new Expression(textBox1.Text).Evaluate());
+            var integ = (int)val;
+            var fract = (int)((val - integ) * 100000);
+            textBox1.Text = ToGexInt(integ);
+            textBox1.Text += "." + ToBinFrac(fract, fract.ToString().Length);
+        }
+
+        public static string ToBinFrac(double frac, int len)
+        {
+            var str = "";
+            int c;
+            var n = 0;
+            while (n < len)
+            {
+
+                frac *= 6;
+                c = Convert.ToInt32(Math.Truncate(frac));
+                str = str + c;
+                frac -= c;
+                n++;
+            }
+            return str;
+        }
+
+        public static string ToGexInt(int dec)
+        {
+            var str = "";
+            while (dec > 0)
+            {
+                str = Concat(Convert.ToString(dec % 6), str);
+                dec = dec / 6;
+            }
+            return (str.Length == 0)? "0" : str;
+        }
+
+        private static long ToDec(string value, int fromBase)
+        {
+            const string table = "0123456789";
+            long rank = 1, result = 0;
+            for (var i = value.Length - 1; i >= 0; i--)
+            {
+                var index = table.IndexOf(value[i]);
+                result += rank * index;
+                rank *= fromBase;
+            }
+            return result;
         }
 
         private bool ValidateSim(string text)
         {
             var textBoxText = textBox1.Text;
-            if (textBoxText == "" || simbols[textBoxText[textBoxText.Length - 1].ToString()] == 1) return false;
-            return true;
+            return textBoxText != "" && simbols[textBoxText[textBoxText.Length - 1].ToString()] != 1;
         }
 
         private bool ValidateNum(string text)
         {
             var textBoxText = textBox1.Text;
             var lastIndex = textBoxText.Length - 1;
-            if (lastIndex > 0 && simbols[textBoxText[textBoxText.Length - 1].ToString()] == 0 && text == ")") return false;
-            return true;
+            return lastIndex <= 0 || simbols[textBoxText[textBoxText.Length - 1].ToString()] != 0 || text != ")";
         }
 
         private bool ValidateBracket(string text)
         {
             var textBoxText = textBox1.Text;
             var lastIndex = textBoxText.Length - 1;
-            countBrackets = (text == "(") ? ++simbols[text] : --simbols[text];
+            countBrackets = (text == "(") ? ++countBrackets : --countBrackets;
             if (countBrackets < 0) { countBrackets++; return false; }
-            if (lastIndex > 0 && simbols[textBoxText[lastIndex].ToString()] == 0 && text == "(") return false;
-            if (lastIndex > 0 && simbols[textBoxText[lastIndex].ToString()] == 1 && text == ")") return false;
+            if (lastIndex >= 0 && simbols[textBoxText[lastIndex].ToString()] == 0 && text == "(") return false;
+            if (lastIndex >= 0 && simbols[textBoxText[lastIndex].ToString()] == 1 && text == ")") return false;
             return true;
         }
 
