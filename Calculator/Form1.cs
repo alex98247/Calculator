@@ -62,27 +62,34 @@ namespace Calculator
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (textBox1.Text == "") return;
-            var regex = new Regex(@"\d*", RegexOptions.IgnoreCase);
-            var matches = regex.Matches(textBox1.Text);
-            var delta = 0;
-            foreach (Match element in matches)
+            try
             {
-                if (element.Length != 0)
+                if (textBox1.Text == "") return;
+                var regex = new Regex(@"\d*", RegexOptions.IgnoreCase);
+                var matches = regex.Matches(textBox1.Text);
+                var delta = 0;
+                foreach (Match element in matches)
                 {
-                    var decInt = ToDec(element.Value, 6).ToString();
-                    textBox1.Text = textBox1.Text.Remove(element.Index - delta, element.Length)
-                        .Insert(element.Index - delta, decInt);
-                    delta += element.Length - decInt.Length;
+                    if (element.Length != 0)
+                    {
+                        var decInt = ToDec(element.Value, 6).ToString();
+                        textBox1.Text = textBox1.Text.Remove(element.Index - delta, element.Length)
+                            .Insert(element.Index - delta, decInt);
+                        delta += element.Length - decInt.Length;
+                    }
                 }
+
+
+                var val = Convert.ToDouble(new Expression(textBox1.Text).Evaluate());
+                var integ = (int) val;
+                var fract = (int) ((val - integ) * 100000);
+                textBox1.Text = ToGexInt(integ);
+                textBox1.Text += "." + ToBinFrac(fract, fract.ToString().Length);
             }
-
-
-            var val = Convert.ToDouble(new Expression(textBox1.Text).Evaluate());
-            var integ = (int)val;
-            var fract = (int)((val - integ) * 100000);
-            textBox1.Text = ToGexInt(integ);
-            textBox1.Text += "." + ToBinFrac(fract, fract.ToString().Length);
+            catch
+            {
+                MessageBox.Show("Произошла ошибка");
+            }
         }
 
         public static string ToBinFrac(double frac, int len)
